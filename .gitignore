@@ -1,0 +1,23 @@
+# Thư mục build
+target/
+
+# File IDE
+.idea/
+*.iml
+.classpath
+.project
+.settings/
+.vscode/
+
+# File log và tạm
+*.log
+*.tmp
+*.swp
+
+# File cấu hình nhạy cảm
+application-prod.yml
+.env
+
+# Thư mục cục bộ khác
+out/
+*.DS_Store
