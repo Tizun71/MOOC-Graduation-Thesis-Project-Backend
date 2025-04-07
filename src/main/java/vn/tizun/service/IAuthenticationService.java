@@ -6,4 +6,5 @@ import vn.tizun.controller.response.TokenResponse;
 public interface IAuthenticationService {
     TokenResponse getAccessToken(SignInRequest request);
     TokenResponse getRefreshToken(String request);
+
 }

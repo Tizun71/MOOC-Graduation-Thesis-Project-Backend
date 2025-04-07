@@ -20,14 +20,14 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import vn.tizun.service.UserServiceDetail;
+import vn.tizun.service.implement.UserServiceDetail;
 
 @Configuration
 @RequiredArgsConstructor
 public class AppConfig {
 
     private final CustomizeRequestFilter customizeRequestFilter;
-    private final UserServiceDetail userServiceDetail;
+    private final vn.tizun.service.implement.UserServiceDetail userServiceDetail;
 
     // Init springweb security
     @Bean
@@ -53,7 +53,7 @@ public class AppConfig {
             @Override
             public void addCorsMappings(@NonNull CorsRegistry registry) {
                 registry.addMapping("**")
-                        .allowedOrigins("http://localhost:8500")
+                        .allowedOrigins("http://localhost:3000")
                         .allowedMethods("GET", "POST", "PUT", "DELETE") // Allowed HTTP methods
                         .allowedHeaders("*") // Allowed request headers
                         .allowCredentials(false)

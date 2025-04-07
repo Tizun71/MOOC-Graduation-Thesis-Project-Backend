@@ -2,6 +2,7 @@ package vn.tizun.controller.response;
 
 import lombok.*;
 import vn.tizun.common.Gender;
+import vn.tizun.common.UserType;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -20,4 +21,5 @@ public class UserResponse implements Serializable {
     private String username;
     private String email;
     private String phone;
+    private UserType type;
 }

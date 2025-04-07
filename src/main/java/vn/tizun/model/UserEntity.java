@@ -7,15 +7,14 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import vn.tizun.common.Gender;
 import vn.tizun.common.UserStatus;
 import vn.tizun.common.UserType;
 
 import java.io.Serializable;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Getter
 @Setter
@@ -74,9 +73,16 @@ public class UserEntity implements UserDetails, Serializable {
     @CreationTimestamp
     private Date updatedAt;
 
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    private Set<UserHasRole> roles = new HashSet<>();
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of();
+
+        List<Role> roleList = roles.stream().map(UserHasRole::getRole).toList();
+        List<String> roleNames = roleList.stream().map(Role::getName).toList();
+
+        return roleNames.stream().map(SimpleGrantedAuthority::new).toList();
     }
 
     @Override

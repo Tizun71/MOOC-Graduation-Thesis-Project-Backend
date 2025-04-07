@@ -10,6 +10,7 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -19,7 +20,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import vn.tizun.common.TokenType;
 import vn.tizun.service.IJwtService;
-import vn.tizun.service.UserServiceDetail;
+import vn.tizun.service.implement.UserServiceDetail;
 
 import java.io.IOException;
 import java.util.Date;
@@ -27,6 +28,7 @@ import java.util.Date;
 @Component
 @Slf4j(topic = "CUSTOMIZE-REQUEST-FILTER")
 @RequiredArgsConstructor
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class CustomizeRequestFilter extends OncePerRequestFilter {
 
     private final IJwtService jwtService;
@@ -46,6 +48,7 @@ public class CustomizeRequestFilter extends OncePerRequestFilter {
             String username = "";
             try {
                 username = jwtService.exactUsername(authHeader, TokenType.ACCESS_TOKEN);
+                System.out.println(username);
                 log.info("username: {}", username);
             } catch (AccessDeniedException e) {
                 log.error("Access Denied, message: {}", e.getMessage());

@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring6.SpringTemplateEngine;
 import vn.tizun.common.MailConstants;
+import vn.tizun.controller.request.AccountRegisterRequest;
 import vn.tizun.controller.request.MailSenderRequest;
 import vn.tizun.controller.request.UserCreationRequest;
 import vn.tizun.service.IMailService;
@@ -46,7 +47,7 @@ public class MailService implements IMailService {
 
     }
 
-    public void sendMail_UserCreation(UserCreationRequest request) {
+    public void sendMail_AccountRegister(AccountRegisterRequest request, String password) {
         MailDataDto mailData = new MailDataDto();
         mailData.setTo(request.getEmail());
         mailData.setSubject(MailConstants.CLIENT_REGISTER);
@@ -54,7 +55,7 @@ public class MailService implements IMailService {
 
         props.put("name", request.getFirstName() + ' ' + request.getLastName());
         props.put("username", request.getUsername());
-        props.put("password", 123);
+        props.put("password", password);
 
         mailData.setProps(props);
 

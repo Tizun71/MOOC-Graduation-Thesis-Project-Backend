@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 import vn.tizun.model.UserEntity;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface IUserRepository extends JpaRepository<UserEntity, Long> {
@@ -23,4 +24,8 @@ public interface IUserRepository extends JpaRepository<UserEntity, Long> {
     UserEntity findByUsername(String username);
 
     UserEntity findByEmail(String email);
+
+    boolean existsByUsername(String username);
+
+    boolean existsByEmail(String email);
 }
