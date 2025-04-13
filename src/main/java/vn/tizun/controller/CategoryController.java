@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import vn.tizun.controller.request.CategoryCreationRequest;
@@ -64,6 +65,7 @@ public class CategoryController {
 
     @Operation(summary = "Create Category", description = "API add new category to db")
     @PostMapping("/add")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<Object> createCategory(@RequestBody @Valid CategoryCreationRequest request){
 
         log.info("Creating new category");
@@ -78,6 +80,7 @@ public class CategoryController {
 
     @Operation(summary = "Update Category", description = "API update category to db")
     @PutMapping("/upd")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public Map<String, Object> updateUser(@RequestBody CategoryUpdateRequest request){
 
         log.info("Updating category with id: {}", request.getId());
@@ -94,6 +97,7 @@ public class CategoryController {
 
     @Operation(summary = "Delete Category", description = "API inactivate category from db")
     @DeleteMapping("/del/{categoryId}")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public Map<String, Object> deleteUser(@PathVariable  @Min(value = 1, message = "categoryId must be equals or greater than 1") Long categoryId){
         log.info("Deleting category: {}", categoryId);
 

@@ -167,7 +167,7 @@ public class UserService implements IUserService {
         user.setUsername(req.getUsername());
         user.setType(UserType.USER);
         user.setStatus(UserStatus.ACTIVE);
-        user.setPassword(password);
+        user.setPassword(passwordEncoder.encode(password));
         userRepository.save(user);
         log.info("Saved user: {}", user);
 

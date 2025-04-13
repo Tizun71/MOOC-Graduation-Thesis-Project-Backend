@@ -2,23 +2,41 @@ package vn.tizun.service.implement;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 import vn.tizun.controller.request.CourseCreationRequest;
 import vn.tizun.controller.request.CourseUpdateRequest;
 import vn.tizun.controller.response.CoursePageResponse;
 import vn.tizun.controller.response.CourseResponse;
+import vn.tizun.controller.response.CoursePageResponse;
+import vn.tizun.controller.response.CourseResponse;
 import vn.tizun.exception.ResourceNotFoundException;
+import vn.tizun.model.CategoryEntity;
+import vn.tizun.model.CourseEntity;
 import vn.tizun.model.CourseEntity;
 import vn.tizun.model.UserEntity;
+import vn.tizun.repository.ICategoryRepository;
 import vn.tizun.repository.ICourseRepository;
+import vn.tizun.repository.IUserRepository;
 import vn.tizun.service.ICourseService;
 import vn.tizun.service.IS3Service;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Service
 @Slf4j(topic = "COURSE-SERVICE")
 @RequiredArgsConstructor
 public class CourseService implements ICourseService {
+    private final ICategoryRepository categoryRepository;
+    private final IUserRepository userRepository;
     private final ICourseRepository courseRepository;
     private final IS3Service s3Service;
 
@@ -26,12 +44,56 @@ public class CourseService implements ICourseService {
 
     @Override
     public CoursePageResponse findAll(String keyword, String sort, int page, int size) {
-        return null;
+        log.info("findAll start");
+
+        // Sorting
+        Sort.Order order = new Sort.Order(Sort.Direction.ASC, "id");
+        if (StringUtils.hasLength(sort)) {
+            Pattern pattern = Pattern.compile("(\\w+?)(:)(.*)"); // tencot:asc|desc
+            Matcher matcher = pattern.matcher(sort);
+            if (matcher.find()) {
+                String columnName = matcher.group(1);
+                if (matcher.group(3).equalsIgnoreCase("asc")) {
+                    order = new Sort.Order(Sort.Direction.ASC, columnName);
+                } else {
+                    order = new Sort.Order(Sort.Direction.DESC, columnName);
+                }
+            }
+        }
+
+        // Xu ly truong hop FE muon bat dau voi page = 1
+        int pageNo = 0;
+        if (page > 0) {
+            pageNo = page - 1;
+        }
+
+        // Paging
+        Pageable pageable = PageRequest.of(pageNo, size, Sort.by(order));
+
+        Page<CourseEntity> entityPage;
+
+        if (StringUtils.hasLength(keyword)) {
+            keyword = "%" + keyword.toLowerCase() + "%";
+            entityPage = courseRepository.searchByKeyword(keyword, pageable);
+        } else {
+            entityPage = courseRepository.findAll(pageable);
+        }
+
+        return getCoursePageResponse(page, size, entityPage);
     }
 
     @Override
     public CourseResponse findById(Long id) {
-        return null;
+
+        CourseEntity course = getCourseEntity(id);
+        return CourseResponse.builder()
+                .id(course.getId())
+                .courseName(course.getCourseName())
+                .description(course.getDescription())
+                .instructorName(course.getUser().getFirstName() + ' ' + course.getUser().getLastName())
+                .categoryName(course.getCategory().getCategoryName())
+                .courseLevel(course.getCourseLevel())
+                .build();
     }
 
     @Override
@@ -46,8 +108,12 @@ public class CourseService implements ICourseService {
         course.setCourseName(req.getCourseName());
         course.setDescription(req.getDescription());
         course.setCourseLevel(req.getCourseLevel());
-        course.setInstructorId(req.getInstructorId());
-        course.setCategoryId(req.getCategoryId());
+
+        Optional<UserEntity> user = userRepository.findById(req.getInstructorId());
+        Optional<CategoryEntity> category = categoryRepository.findById(req.getInstructorId());
+
+        course.setUser(user.get());
+        course.setCategory(category.get());
 
         courseRepository.save(course);
         log.info("Saved course: {}", course);
@@ -88,5 +154,28 @@ public class CourseService implements ICourseService {
     @Override
     public void delete(Long id) {
 
+    }
+
+    private static CoursePageResponse getCoursePageResponse(int page, int size, Page<CourseEntity> CourseEntities) {
+        log.info("Convert Course Entity Page");
+
+        List<CourseResponse> CourseList = CourseEntities.stream().map(entity -> CourseResponse.builder()
+                .id(entity.getId())
+                .courseName(entity.getCourseName())
+                .description(entity.getDescription())
+                .instructorName(entity.getUser().getFirstName() + ' ' + entity.getUser().getLastName())
+                .categoryName(entity.getCategory().getCategoryName())
+                .courseLevel(entity.getCourseLevel())
+                .build()
+        ).toList();
+
+        CoursePageResponse response = new CoursePageResponse();
+        response.setPageNumber(page);
+        response.setPageSize(size);
+        response.setTotalElements(CourseEntities.getTotalElements());
+        response.setTotalPages(CourseEntities.getTotalPages());
+        response.setCourses(CourseList);
+
+        return response;
     }
 }

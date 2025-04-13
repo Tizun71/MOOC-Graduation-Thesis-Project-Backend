@@ -7,6 +7,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 import vn.tizun.common.CourseLevel;
+import vn.tizun.common.CourseStatus;
 
 import java.util.Date;
 
@@ -34,11 +35,18 @@ public class CourseEntity {
     @Column(name = "level", length = 255)
     private CourseLevel courseLevel;
 
-    @Column(name = "instructorId")
-    private long instructorId;
+    @Enumerated(EnumType.STRING)
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
+    @Column(name = "status", length = 255)
+    private CourseStatus courseStatus;
 
-    @Column(name = "categoryId")
-    private long categoryId;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "category_id")
+    private CategoryEntity category;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "user_id")
+    private UserEntity user;
 
     @Column(name = "created_at", length = 255)
     @Temporal(TemporalType.TIMESTAMP)

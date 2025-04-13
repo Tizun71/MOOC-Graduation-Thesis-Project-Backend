@@ -15,6 +15,8 @@ import vn.tizun.controller.request.CourseCreationRequest;
 import vn.tizun.controller.request.CourseUpdateRequest;
 import vn.tizun.controller.request.UserPasswordRequest;
 import vn.tizun.controller.response.CoursePageResponse;
+import vn.tizun.controller.response.CourseResponse;
+import vn.tizun.controller.response.UserResponse;
 import vn.tizun.service.ICourseService;
 
 import java.util.LinkedHashMap;
@@ -44,6 +46,20 @@ public class CourseController {
         result.put("messaege", "course list");
         result.put("data", courseList);
 
+        return result;
+    }
+
+    @Operation(summary = "Get course detail", description = "API retrieve course detail by ID")
+    @GetMapping("/{courseId}")
+    public Map<String, Object> getUserDetail(@PathVariable @Min(value = 1, message = "CourseID must be equal or greater than 1") Long courseId){
+        log.info("Get course detail by ID: {}", courseId);
+
+        CourseResponse courseDetail = courseService.findById(courseId);
+
+        Map<String, Object> result = new LinkedHashMap<>();
+        result.put("status", HttpStatus.OK.value());
+        result.put("message", "user");
+        result.put("data", courseDetail);
         return result;
     }
 

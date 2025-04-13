@@ -7,9 +7,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import vn.tizun.common.UserStatus;
 import vn.tizun.common.UserType;
+import vn.tizun.model.CategoryEntity;
 import vn.tizun.model.Role;
 import vn.tizun.model.UserEntity;
 import vn.tizun.model.UserHasRole;
+import vn.tizun.repository.ICategoryRepository;
 import vn.tizun.repository.IRoleRepository;
 import vn.tizun.repository.IUserHasRoleRepository;
 import vn.tizun.repository.IUserRepository;
@@ -19,6 +21,7 @@ import vn.tizun.repository.IUserRepository;
 public class DataInitializationService {
     private final IRoleRepository roleRepository;
     private final IUserRepository userRepository;
+    private final ICategoryRepository categoryRepository;
     private final IUserHasRoleRepository userHasRoleRepository;
     private final PasswordEncoder passwordEncoder;
 
@@ -71,6 +74,16 @@ public class DataInitializationService {
             userHasRole.setUser(user);
             userHasRole.setRole(role);
             userHasRoleRepository.save(userHasRole);
+        }
+    }
+
+    @PostConstruct
+    public void initCategories(){
+        if (categoryRepository.count() == 0){
+            CategoryEntity category = new CategoryEntity();
+            category.setCategoryName("IT - Computer Science");
+            category.setDescription("Bao gồm phần mềm, phần cứng, khoa học máy tính");
+            categoryRepository.save(category);
         }
     }
 }

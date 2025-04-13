@@ -34,7 +34,6 @@ public class UserController {
 
     @Operation(summary = "Get user list", description = "API retrieve user from db")
     @GetMapping("/list")
-    @PreAuthorize("hasAuthority('ADMIN')")
     public Map<String, Object> getList(@RequestParam(required = false) String keyword,
                                     @RequestParam(required = false) String sort,
                                     @RequestParam(defaultValue = "0") int page,

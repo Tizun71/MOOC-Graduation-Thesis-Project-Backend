@@ -35,9 +35,14 @@ springdoc:
   swagger-ui:
     enable: true
 openapi:
+#  service:
+#    api-docs: backend-service
+#    server: http://localhost:${server.port}
+#    title: Backend service
+#    version: 1.0.0
   service:
     api-docs: backend-service
-    server: http://localhost:${server.port}
+    server: http://103.188.82.26:${server.port}
     title: Backend service
     version: 1.0.0
 
@@ -60,3 +65,7 @@ aws:
   secretKey: ${AWS_S3_SECRET_KEY}
   region: ap-southeast-1
   bucketName: kltn-mooc-blockchain
+
+eth:
+  walletPrivateKey: ${BLOCKCHAIN_PRIVATE_KEY}
+  sepoliaNode: ${SEPOLIA_INFURA_URL}
