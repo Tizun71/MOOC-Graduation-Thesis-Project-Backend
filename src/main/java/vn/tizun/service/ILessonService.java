@@ -15,5 +15,5 @@ public interface ILessonService {
     long save(LessonCreationRequest req);
     void update(LessonUpdateRequest req);
     void delete(Long id);
-    String uploadVideoToS3(Long courseId, MultipartFile file);
+    void uploadVideoToS3(Long courseId, MultipartFile file);
 }

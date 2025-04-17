@@ -17,8 +17,9 @@ public class LessonEntity {
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "course_id")
-    private Long courseId;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "section_id")
+    private SectionEntity section;
 
     @Column(name = "title")
     private String title;

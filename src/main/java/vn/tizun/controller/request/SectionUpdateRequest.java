@@ -3,9 +3,8 @@ package vn.tizun.controller.request;
 import lombok.Getter;
 
 @Getter
-public class LessonUpdateRequest {
+public class SectionUpdateRequest {
     private Long id;
     private String title;
-    private String content;
     private int position;
 }

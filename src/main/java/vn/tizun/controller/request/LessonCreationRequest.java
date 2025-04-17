@@ -6,9 +6,8 @@ import lombok.Setter;
 @Getter
 @Setter
 public class LessonCreationRequest {
-    private Long courseId;
+    private Long sectionId;
     private String title;
-    private String videoUrl;
     private String content;
     private int position;
 }

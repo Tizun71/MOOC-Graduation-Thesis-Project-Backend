@@ -9,5 +9,5 @@ public class CourseUpdateRequest {
     private String courseName;
     private String description;
     private CourseLevel courseLevel;
-    private long categoryId;
+    private Long categoryId;
 }

@@ -1,6 +1,7 @@
 package vn.tizun.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +18,9 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 @RestController
-@Slf4j
+@RequestMapping("/lesson")
+@Tag(name = "Lesson Controller")
+@Slf4j(topic = "LESSON-CONTROLLER")
 @RequiredArgsConstructor
 public class LessonController {
     private final ILessonService lessonService;
@@ -103,12 +106,12 @@ public class LessonController {
 
         log.info("Upload new lesson video");
 
-        String video_url = lessonService.uploadVideoToS3(course_id, file);
+        lessonService.uploadVideoToS3(course_id, file);
 
         Map<String, Object> result = new LinkedHashMap<>();
         result.put("status", HttpStatus.CREATED.value());
         result.put("message", "video uploaded successfully");
-        result.put("data", video_url);
+        result.put("data", "");
 
         return new ResponseEntity<>(result, HttpStatus.CREATED);
     }

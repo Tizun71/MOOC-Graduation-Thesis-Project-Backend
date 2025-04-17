@@ -10,10 +10,14 @@ import vn.tizun.controller.response.LessonPageResponse;
 import vn.tizun.controller.response.LessonResponse;
 import vn.tizun.exception.ResourceNotFoundException;
 import vn.tizun.model.LessonEntity;
+import vn.tizun.model.SectionEntity;
 import vn.tizun.model.UserEntity;
 import vn.tizun.repository.ILessonRepository;
+import vn.tizun.repository.ISectionRepository;
 import vn.tizun.service.ILessonService;
 import vn.tizun.service.IS3Service;
+
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -21,6 +25,7 @@ import vn.tizun.service.IS3Service;
 public class LessonService implements ILessonService {
 
     private final ILessonRepository lessonRepository;
+    private final ISectionRepository sectionRepository;
     private final IS3Service s3Service;
 
     @Override
@@ -44,6 +49,11 @@ public class LessonService implements ILessonService {
         lesson.setTitle(req.getTitle());
         lesson.setContent(req.getContent());
 
+        Optional<SectionEntity> section = sectionRepository.findById(req.getSectionId());
+        lesson.setSection(section.get());
+
+        lesson.setPosition(lessonRepository.findMaxPosition() + 1);
+
         lessonRepository.save(lesson);
         log.info("Saved lesson: {}", lesson);
 
@@ -55,7 +65,7 @@ public class LessonService implements ILessonService {
 
         LessonEntity lesson = getLessonEntity(req.getId());
 
-        lesson.setTitle(req.getContent());
+        lesson.setTitle(req.getTitle());
         lesson.setContent(req.getContent());
         lesson.setPosition(req.getPosition());
 
@@ -70,10 +80,13 @@ public class LessonService implements ILessonService {
     }
 
     @Override
-    public String uploadVideoToS3(Long courseId, MultipartFile file) {
+    public void uploadVideoToS3(Long courseId, MultipartFile file) {
         String FOLDER_DIRECTORY = "courses/" + courseId;
         String video_url = s3Service.uploadFileToS3(FOLDER_DIRECTORY, file);
-        return video_url;
+
+        LessonEntity lesson = getLessonEntity(courseId);
+        lesson.setVideoUrl(video_url);
+        lessonRepository.save(lesson);
     }
 
     private LessonEntity getLessonEntity(Long id){

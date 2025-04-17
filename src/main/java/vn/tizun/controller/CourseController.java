@@ -107,11 +107,11 @@ public class CourseController {
     }
 
     @Operation(summary = "Delete Category", description = "API inactivate course from db")
-    @DeleteMapping("/del/{categoryId}")
-    public Map<String, Object> deleteUser(@PathVariable  @Min(value = 1, message = "courseId must be equals or greater than 1") Long categoryId){
-        log.info("Deleting course: {}", categoryId);
+    @DeleteMapping("/del/{courseId}")
+    public Map<String, Object> deleteUser(@PathVariable  @Min(value = 1, message = "courseId must be equals or greater than 1") Long courseId){
+        log.info("Deleting course: {}", courseId);
 
-        courseService.delete(categoryId);
+        courseService.delete(courseId);
 
         Map<String, Object> result = new LinkedHashMap<>();
         result.put("status", HttpStatus.RESET_CONTENT.value());

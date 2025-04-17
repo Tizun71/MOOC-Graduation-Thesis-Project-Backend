@@ -9,6 +9,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
+import vn.tizun.common.CourseStatus;
 import vn.tizun.controller.request.CourseCreationRequest;
 import vn.tizun.controller.request.CourseUpdateRequest;
 import vn.tizun.controller.response.CoursePageResponse;
@@ -108,9 +109,10 @@ public class CourseService implements ICourseService {
         course.setCourseName(req.getCourseName());
         course.setDescription(req.getDescription());
         course.setCourseLevel(req.getCourseLevel());
+        course.setCourseStatus(CourseStatus.UNPUBLISHED);
 
         Optional<UserEntity> user = userRepository.findById(req.getInstructorId());
-        Optional<CategoryEntity> category = categoryRepository.findById(req.getInstructorId());
+        Optional<CategoryEntity> category = categoryRepository.findById(req.getCategoryId());
 
         course.setUser(user.get());
         course.setCategory(category.get());
@@ -129,6 +131,9 @@ public class CourseService implements ICourseService {
         course.setCourseName(req.getCourseName());
         course.setDescription(req.getDescription());
         course.setCourseLevel(req.getCourseLevel());
+
+        Optional<CategoryEntity> category = categoryRepository.findById(req.getCategoryId());
+        course.setCategory(category.get());
 
         courseRepository.save(course);
 
@@ -153,7 +158,9 @@ public class CourseService implements ICourseService {
 
     @Override
     public void delete(Long id) {
-
+        CourseEntity course = getCourseEntity(id);
+        course.setCourseStatus(CourseStatus.DELETED);
+        courseRepository.save(course);
     }
 
     private static CoursePageResponse getCoursePageResponse(int page, int size, Page<CourseEntity> CourseEntities) {
